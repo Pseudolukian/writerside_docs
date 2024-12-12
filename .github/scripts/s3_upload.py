@@ -1,5 +1,6 @@
 import boto3
 import sys
+import os
 import zipfile
 
 #======== Set up zone ================#
