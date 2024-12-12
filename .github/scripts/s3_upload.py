@@ -5,25 +5,21 @@ import zipfile
 
 #======== Set up zone ================#
 bucket_name = 'writerside-demo-docs'
-zip_folder_export = "./extract-folder/"
-zip_path = "webHelpW2-all.zip"
 yandex_s3_endpoint = "https://storage.yandexcloud.net"
 
 #=====================================#
 
 def unzip_file(zip_path, extract_to):
-    # Убедитесь, что путь для извлечения существует, если нет - создайте
+    
     if not os.path.exists(extract_to):
         os.makedirs(extract_to)
 
-    # Откройте ZIP-архив
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        # Извлеките все файлы в указанный каталог
         zip_ref.extractall(extract_to)
         print(f"Файлы извлечены в: {extract_to}")
 
 
-def get_s3_session():
+def get_s3_session(access_key_id, secret_access_key):
 
     session = boto3.session.Session()
     session = boto3.Session(
@@ -68,9 +64,17 @@ def upload_doc_s3(s3_session, bucket_name, folder_path):
             print(f"Загружен {local_path} в s3://{bucket_name}/{s3_key}")
     print("Все файлы успешно загружены.")
 
-if __name__ == "__main__":
-    unzip_file(zip_path = zip_path, extract_to=zip_folder_export)
-    s3_connect = get_s3_session()
+def run(zip_archive_path, folder_to_unzip, access_key_id, secret_access_key):
+    unzip_file(zip_path = zip_archive_path, extract_to=folder_to_unzip)
+    s3_connect = get_s3_session(access_key_id=access_key_id, secret_access_key = secret_access_key)
     clean_s3_bucket(s3_session=s3_connect)
-    upload_doc_s3(s3_session=s3_connect, bucket_name=bucket_name, folder_path=zip_folder_export)
+    upload_doc_s3(s3_session=s3_connect, bucket_name=bucket_name, folder_path=folder_to_unzip)
+
+if __name__ == "__main__":
+    run(zip_archive_path=os.argv[1], 
+        folder_to_unzip=os.argv[2], 
+        access_key_id = os.argv[3], 
+        secret_access_key = os.argv[4])
+
+    
 

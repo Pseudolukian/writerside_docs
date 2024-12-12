@@ -27,6 +27,7 @@ jobs:
           INSTANCE=${INSTANCE#*/}
           INSTANCE_ID_UPPER=$(echo "$INSTANCE" | tr '[:lower:]' '[:upper:]')
           ARTIFACT="webHelp${INSTANCE_ID_UPPER}2-all.zip"
+          EXPORT_FOLDER="./export_zip_docs"
           
           # Print the values
           echo "INSTANCE_ID_UPPER: $INSTANCE_ID_UPPER"
@@ -44,17 +45,17 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-   
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
         with:
-          aws-access-key-id: ${{ secrets.S3_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-          aws-region: "ru-central1"
-          audience: "https://iam.api.cloud.yandex.net/iam/v1/tokens"
-     
-      - name: Upload artifacts to AWS S3
-        uses: usualdesigner/s3-artifact-upload@main
-        with:
-          bucket-name: "writerside-demo-docs"
-          file: ${{ env.ARTIFACT }}
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r .github/scripts/requirements.txt
+
+      - name: Upload artifact to S3
+        run: |
+          python .github/scripts/s3_upload.py "${{ env.ARTIFACT }} ${{ env.EXPORT_FOLDER }} ${{ secrets.S3_ACCESS_KEY_ID }} ${{ secrets.S3_SECRET_ACCESS_KEY }}"    
