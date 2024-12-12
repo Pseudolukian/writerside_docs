@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vars SYSTEM "https://resources.jetbrains.com/writerside/1.0/vars.dtd">
+<vars>
+    <var name="product" value="Writerside"/>
+    <var name="toolbox" value="JetBrains Toolbox"/>
+    <var name="inline-icon-width" value="20"/>
+    <var name="toolbox-link" value="https://www.jetbrains.com/toolbox-app/"/>
+    <var name="actual-ver-ws" value="2.5.2.35332"/>
+    <var name="img-def-size-in-tabs" value="400"/>
+</vars>
