@@ -1,6 +1,5 @@
 import boto3
-import os
-from os import path
+import sys
 import zipfile
 
 #======== Set up zone ================#
@@ -71,10 +70,10 @@ def run(zip_archive_path, folder_to_unzip, access_key_id, secret_access_key):
     upload_doc_s3(s3_session=s3_connect, bucket_name=bucket_name, folder_path=folder_to_unzip)
 
 if __name__ == "__main__":
-    run(zip_archive_path=os.argv[1], 
-        folder_to_unzip=os.argv[2], 
-        access_key_id = os.argv[3], 
-        secret_access_key = os.argv[4])
+    run(zip_archive_path=sys.argv[1], 
+        folder_to_unzip=sys.argv[2], 
+        access_key_id = sys.argv[3], 
+        secret_access_key = sys.argv[4])
 
     
 
