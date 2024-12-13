@@ -58,7 +58,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install -r ./github/scripts/requirements.txt
+        run: pip install -r './.github/scripts/requirements.txt'
 
       - name: Run Python script to upload documentation on S3
         run: python ./github/scripts/s3_upload.py "dir/" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}"
