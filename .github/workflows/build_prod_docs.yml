@@ -28,7 +28,7 @@ jobs:
           INSTANCE_ID_UPPER=$(echo "$INSTANCE" | tr '[:lower:]' '[:upper:]')
           ARTIFACT="webHelp${INSTANCE_ID_UPPER}2-all.zip"
           EXPORT_FOLDER="/github/workspace/artifacts/"
-          OUTPUT_DIR="./artifacts"
+          OUTPUT_DIR="$HOME/out_put_docs"
 
           # Print the values
           echo "INSTANCE_ID_UPPER: $INSTANCE_ID_UPPER"
@@ -51,6 +51,14 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
+      
+      - name: Create out_put folder
+        run: |
+          mkdir -p "${{ env.OUTPUT_DIR }}"
+        
+      - name: Copy artifact to Python script folder
+        run: |
+          cp "${{ env.EXPORT_FOLDER }}${{ env.ARTIFACT }}" "${{ env.OUTPUT_DIR }}"
 
       - name: Set up Python environment
         uses: actions/setup-python@v4
