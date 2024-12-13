@@ -61,8 +61,4 @@ jobs:
 
       - name: Upload artifact to S3
         run: |
-          python .github/scripts/s3_upload.py 
-          "${{ env.EXPORT_FOLDER }}/${{ env.ARTIFACT }}" 
-          "${{ env.EXPORT_FOLDER }}" 
-          "${{ secrets.S3_ACCESS_KEY_ID }}" 
-          "${{ secrets.S3_SECRET_ACCESS_KEY }}"
+          python .github/scripts/s3_upload.py "${{ env.EXPORT_FOLDER }}/${{ env.ARTIFACT }}" "${{ env.EXPORT_FOLDER }}" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}"
