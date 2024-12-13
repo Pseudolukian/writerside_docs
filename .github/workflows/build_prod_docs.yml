@@ -47,7 +47,7 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-          output-directory: ${{ env.EXPORT_FOLDER }}
+          output-dir: ${{ env.EXPORT_FOLDER }}
 
       - name: Set up Python environment
         uses: actions/setup-python@v4
