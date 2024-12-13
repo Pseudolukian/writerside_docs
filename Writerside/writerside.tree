@@ -11,5 +11,6 @@
         <toc-element topic="run-for-the-first-time.md"/>
         <toc-element topic="test_doc.md"/>
     </toc-element>
+    <toc-element topic="new_article_with_new_vers.md"/>
 
 </instance-profile>
