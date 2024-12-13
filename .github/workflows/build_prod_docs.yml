@@ -28,17 +28,21 @@ jobs:
           INSTANCE_ID_UPPER=$(echo "$INSTANCE" | tr '[:lower:]' '[:upper:]')
           ARTIFACT="webHelp${INSTANCE_ID_UPPER}2-all.zip"
           EXPORT_FOLDER="/github/workspace/artifacts/"
+          OUTPUT_DIR="./artifacts"
 
           # Print the values
           echo "INSTANCE_ID_UPPER: $INSTANCE_ID_UPPER"
           echo "ARTIFACT: $ARTIFACT"
           echo "EXPORT_FOLDER: $EXPORT_FOLDER"
+          echo "OUTPUT_DIR: $OUTPUT_DIR"
 
           # Set the environment variables and outputs
           echo "INSTANCE_ID_UPPER=$INSTANCE_ID_UPPER" >> $GITHUB_ENV
           echo "ARTIFACT=$ARTIFACT" >> $GITHUB_ENV
           echo "artifact=$ARTIFACT" >> $GITHUB_OUTPUT
           echo "EXPORT_FOLDER=$EXPORT_FOLDER" >> $GITHUB_ENV
+          echo "OUTPUT_DIR=$OUTPUT_DIR" >> $GITHUB_ENV
+
           
 
       - name: Build docs using Writerside Docker builder
@@ -60,4 +64,4 @@ jobs:
 
       - name: Upload artifact to S3
         run: |
-          python .github/scripts/s3_upload.py "${{ env.EXPORT_FOLDER }}${{ env.ARTIFACT }}" "${{ env.EXPORT_FOLDER }}" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}"
+          python .github/scripts/s3_upload.py "${{ env.EXPORT_FOLDER }}${{ env.ARTIFACT }}" "${{ env.OUTPUT_DIR }}" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}"
