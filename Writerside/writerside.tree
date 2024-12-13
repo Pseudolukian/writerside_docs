@@ -9,6 +9,7 @@
     <toc-element topic="getting_started.md">
         <toc-element topic="install.md"/>
         <toc-element topic="run-for-the-first-time.md"/>
+        <toc-element topic="test_doc.md"/>
     </toc-element>
 
 </instance-profile>
