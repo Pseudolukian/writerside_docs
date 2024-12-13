@@ -7,7 +7,7 @@ on:
 
 env:
   INSTANCE: 'Writerside/writerside'
-  DOCKER_VERSION: '243.22562'
+  DOCKER_VERSION: '243.21565'
 
 jobs:
   build:
@@ -27,23 +27,19 @@ jobs:
           INSTANCE=${INSTANCE#*/}
           INSTANCE_ID_UPPER=$(echo "$INSTANCE" | tr '[:lower:]' '[:upper:]')
           ARTIFACT="webHelp${INSTANCE_ID_UPPER}2-all.zip"
-          EXPORT_FOLDER="/github/workspace/artifacts/"
-          OUTPUT_DIR="$HOME/out_put_docs"
+          ALGOLIA_ARTIFACT="algolia-indexes-${INSTANCE_ID_UPPER}.zip"
 
           # Print the values
           echo "INSTANCE_ID_UPPER: $INSTANCE_ID_UPPER"
           echo "ARTIFACT: $ARTIFACT"
-          echo "EXPORT_FOLDER: $EXPORT_FOLDER"
-          echo "OUTPUT_DIR: $OUTPUT_DIR"
+          echo "ALGOLIA_ARTIFACT: $ALGOLIA_ARTIFACT"
 
           # Set the environment variables and outputs
           echo "INSTANCE_ID_UPPER=$INSTANCE_ID_UPPER" >> $GITHUB_ENV
           echo "ARTIFACT=$ARTIFACT" >> $GITHUB_ENV
+          echo "ALGOLIA_ARTIFACT=$ALGOLIA_ARTIFACT" >> $GITHUB_ENV
           echo "artifact=$ARTIFACT" >> $GITHUB_OUTPUT
-          echo "EXPORT_FOLDER=$EXPORT_FOLDER" >> $GITHUB_ENV
-          echo "OUTPUT_DIR=$OUTPUT_DIR" >> $GITHUB_ENV
-
-          
+          echo "algolia_artifact=$ALGOLIA_ARTIFACT" >> $GITHUB_OUTPUT
 
       - name: Build docs using Writerside Docker builder
         uses: JetBrains/writerside-github-action@v4
@@ -51,25 +47,13 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-      
-      - name: Create out_put folder
-        run: |
-          mkdir -p "${{ env.OUTPUT_DIR }}"
-        
-      - name: Copy artifact to Python script folder
-        run: |
-          cp "${{ env.EXPORT_FOLDER }}${{ env.ARTIFACT }}" "${{ env.OUTPUT_DIR }}"
 
-      - name: Set up Python environment
-        uses: actions/setup-python@v4
+      - name: Save artifact with build results
+        uses: actions/upload-artifact@v4
         with:
-          python-version: '3.x'
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r .github/scripts/requirements.txt
-
-      - name: Upload artifact to S3
-        run: |
-          python .github/scripts/s3_upload.py "${{ env.EXPORT_FOLDER }}${{ env.ARTIFACT }}" "${{ env.OUTPUT_DIR }}" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}"
+          name: docs
+          path: |
+            artifacts/${{ env.ARTIFACT }}
+            artifacts/report.json
+            artifacts/${{ env.ALGOLIA_ARTIFACT }}
+          retention-days: 1
