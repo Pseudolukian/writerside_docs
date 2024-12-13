@@ -8,7 +8,7 @@
         <variables>
             <noindex-content>true</noindex-content>
             <custom-css>custom.css</custom-css>
-            <versions-switcher>https://pseudolukian.github.io/help-versions.json</versions-switcher>
+            <versions-switcher>https://raw.githubusercontent.com/Pseudolukian/writerside_docs/refs/heads/main/Writerside/help-versions.json</versions-switcher>
         </variables>
     </build-profile>
 
