@@ -138,6 +138,7 @@ jobs:
             SERVER_USER: ${{ secrets.REMOTE_USER }}
             SERVER_HOST: ${{ secrets.REMOTE_HOST }}
             SERVER_PATH: $HOME/
+            TAG: ${{ env.TAG }}
           run: |
-            rsync --archive --compress --progress artifacts/docs/ ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}
+            rsync --archive --compress --progress docs/ ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}docs_${TAG}/
         
