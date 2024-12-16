@@ -36,7 +36,7 @@ jobs:
         env: 
           DIR: ${{ env.DIR }}
         with:
-          host: ${{ env.HOST }}
+          host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           command: |        
@@ -64,7 +64,7 @@ jobs:
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SOURCE: "artifacts"
-          REMOTE_HOST: ${{ env.HOST }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: ${{ env.DIR }}
     
