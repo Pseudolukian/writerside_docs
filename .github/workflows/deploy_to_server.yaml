@@ -24,17 +24,22 @@ jobs:
           else
             echo "Latest Tag: ${{ steps.get_tag.outputs.tag }}"
           fi        
+      
+      - name: Set environment variables
+        run: |
+          echo "TAG=${{ steps.get_tag.outputs.tag }}" >> $GITHUB_ENV
+          echo "DIR=/var/www/writerside_doc/versions/${{ steps.get_tag.outputs.tag }}" >> $GITHUB_ENV
 
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Check structure on server
+        id: prepare_server
+        uses: garygrossgarten/github-action-ssh@release
+        env: 
+          DIR: ${{ env.DIR }}
         with:
-          host: 89.169.160.117
+          host: ${{ env.HOST }}
           username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            TAG="${{ steps.get_tag.outputs.tag }}"
-            DIR="/var/www/writerside_doc/versions/${TAG}"
-            
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          command: |        
             # Проверяем наличие директории
             if [ -d "$DIR" ]; then
               echo "Директория $DIR существует. Очищаем содержимое."
@@ -48,25 +53,19 @@ jobs:
             echo "Загружаем артифакт в $DIR"
             exit 0  # Выходим из SSH сессии перед загрузкой файла
       
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: docs
+          path: artifacts
+      
       - name: Upload Artifact
-        uses: appleboy/scp-action@master
+        uses: easingthemes/ssh-deploy@main
         with:
-          host: ${{ env.HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "artifacts/docs.zip"
-          target: "/var/www/writerside_doc/versions/${{ steps.get_tag.outputs.tag }}/"
-          
-      - name: Extract Artifact on Server
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ env.HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            TAG="${{ steps.get_tag.outputs.tag }}"
-            DIR="/var/www/writerside_doc/versions/${TAG}"
-            
-            echo "Распаковываем артифакт в $DIR"
-            unzip -o $DIR/docs.zip -d $DIR
-            rm $DIR/docs.zip
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SOURCE: "artifacts"
+          REMOTE_HOST: ${{ env.HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: ${{ env.DIR }}
+    
+        
