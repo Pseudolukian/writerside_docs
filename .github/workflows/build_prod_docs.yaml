@@ -133,12 +133,14 @@ jobs:
             name: docs
             path: artifacts
         
-        - name: Upload Artifact with rsync
+        - name: Copy single file to remote
+          uses: garygrossgarten/github-action-scp@release
           env:
-            SERVER_USER: ${{ secrets.REMOTE_USER }}
-            SERVER_HOST: ${{ secrets.REMOTE_HOST }}
-            SERVER_PATH: $HOME/
             TAG: ${{ env.TAG }}
-          run: |
-            rsync --archive --compress --progress docs/ ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}docs_${TAG}/
+          with:
+            local: artifacts/
+            remote: "~/docs_${{ env.TAG }}/"
+            host: ${{ secrets.REMOTE_HOST }}
+            username: ${{ secrets.REMOTE_USER }}
+            privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
         
