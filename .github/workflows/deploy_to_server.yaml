@@ -1,0 +1,73 @@
+on:
+  workflow_run:
+    workflows: ["Build production documentation"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Latest Tag
+        id: get_tag
+        run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
+      
+      - name: Check and Print Tag
+        run: |
+          if [ -z "${{ steps.get_tag.outputs.tag }}" ]; then
+            echo "Tag is empty. Exiting."
+            exit 1
+          else
+            echo "Latest Tag: ${{ steps.get_tag.outputs.tag }}"
+          fi        
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            TAG="${{ steps.get_tag.outputs.tag }}"
+            DIR="/var/www/writerside_doc/versions/${TAG}"
+            
+            # Проверяем наличие директории
+            if [ -d "$DIR" ]; then
+              echo "Директория $DIR существует. Очищаем содержимое."
+              rm -rf ${DIR}/*
+            else
+              echo "Директория $DIR не существует. Создаём директорию."
+              mkdir -p $DIR
+            fi
+            
+            # Загружаем артифакт на сервер
+            echo "Загружаем артифакт в $DIR"
+            exit 0  # Выходим из SSH сессии перед загрузкой файла
+      
+      - name: Upload Artifact
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "artifacts/docs.zip"
+          target: "/var/www/writerside_doc/versions/${{ steps.get_tag.outputs.tag }}/"
+          
+      - name: Extract Artifact on Server
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            TAG="${{ steps.get_tag.outputs.tag }}"
+            DIR="/var/www/writerside_doc/versions/${TAG}"
+            
+            echo "Распаковываем артифакт в $DIR"
+            unzip -o $DIR/docs.zip -d $DIR
+            rm $DIR/docs.zip

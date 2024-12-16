@@ -1,0 +1,28 @@
+name: Update help versions
+
+on:
+  push:
+    tags:
+       - '**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get Latest Tag
+        id: get_tag
+        run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
+      
+      - name: Check and Print Tag
+        run: |
+          if [ -z "${{ steps.get_tag.outputs.tag }}" ]; then
+            echo "Tag is empty. Exiting."
+            exit 1
+          else
+            echo "Latest Tag: ${{ steps.get_tag.outputs.tag }}"
+          fi    
+
