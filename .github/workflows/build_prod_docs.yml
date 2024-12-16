@@ -18,17 +18,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Find Tag
-        id: tagger
-        uses: digital-ai/query-tag-action@v2    
-
+      - name: Get Latest Tag
+        id: get_tag
+        run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
+    
       - name: Check and Print Tag
         run: |
-          if [ -z "${{ steps.tagger.outputs.tag }}" ]; then
+          if [ -z "${{ steps.get_tag.outputs.tag }}" ]; then
             echo "Tag is empty. Exiting."
             exit 1
           else
-            echo "Tag: ${{ steps.tagger.outputs.tag }}"
+            echo "Latest Tag: ${{ steps.get_tag.outputs.tag }}"
           fi
 
       - name: Define instance id and artifacts
@@ -71,4 +71,4 @@ jobs:
         run: pip install -r './.github/scripts/requirements.txt'
 
       - name: Run Python script to upload documentation on S3
-        run: python ./.github/scripts/s3_upload_v2.py "dir/" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}" "${{ steps.tagger.outputs.tag }}"
+        run: python ./.github/scripts/s3_upload_v2.py "dir/" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}" "${{ steps.get_tag.outputs.tag }}"
