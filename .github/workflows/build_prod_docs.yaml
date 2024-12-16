@@ -67,10 +67,6 @@ jobs:
             artifacts/report.json
             artifacts/${{ env.ALGOLIA_ARTIFACT }}
           retention-days: 7
-  
-  deploy_job:
-       needs: build
-       uses: ./.github/workflows/deploy_to_server.yaml
 
 
         
