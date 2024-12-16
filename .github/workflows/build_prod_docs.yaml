@@ -71,5 +71,10 @@ jobs:
   deploy_job:
        needs: build
        uses: ./.github/workflows/deploy_to_server.yaml
+       secrets:
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
 
         
