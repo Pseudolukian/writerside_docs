@@ -19,10 +19,11 @@ jobs:
           fetch-depth: 0
 
       - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
+        uses: olegtarasov/get-tag@v2.1.4
+        id: tagName
         with:
-          strip_v: true
+          tagRegex: "foobar-(.*)"  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
+          tagRegexGroup: 1 # Optional. Default is 1.
     
       
 
@@ -66,4 +67,4 @@ jobs:
         run: pip install -r './.github/scripts/requirements.txt'
 
       - name: Run Python script to upload documentation on S3
-        run: python ./.github/scripts/s3_upload_v2.py "dir/" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}" "${{ steps.tag.outputs.tag }}"
+        run: python ./.github/scripts/s3_upload_v2.py "dir/" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}" "${{ steps.tagName.outputs.tag }}"
