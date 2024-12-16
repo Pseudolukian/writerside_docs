@@ -1,10 +1,11 @@
 name: Deploy documentation on server
 
 on:
-  workflow_run:
-    workflows: [Build production documentation]
-    types: [completed]
-    branches: [main]
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   deploy:
