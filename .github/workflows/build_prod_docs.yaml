@@ -71,7 +71,5 @@ jobs:
   deploy_job:
        needs: build
        uses: ./.github/workflows/deploy_to_server.yaml
-       with:
-         environment: production
 
         
