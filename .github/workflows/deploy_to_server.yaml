@@ -32,7 +32,7 @@ jobs:
       - name: Deploy to Server
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ env.HOST }}
+          host: "89.169.160.117"
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
