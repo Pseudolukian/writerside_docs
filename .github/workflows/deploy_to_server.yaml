@@ -62,29 +62,6 @@ jobs:
 
       - name: Generate auth hosts
         run: ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Check structure on server
-        id: prepare_server
-        uses: garygrossgarten/github-action-ssh@release
-        env: 
-          DIR: ${{ env.DIR }}
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-          command: |        
-            # Проверяем наличие директории
-            if [ -d "$DIR" ]; then
-              echo "Директория $DIR существует. Очищаем содержимое."
-              rm -rf ${DIR}/*
-            else
-              echo "Директория $DIR не существует. Создаём директорию."
-              mkdir -p $DIR
-            fi
-            
-            # Загружаем артифакт на сервер
-            echo "Загружаем артифакт в $DIR"
-            exit 0  # Выходим из SSH сессии перед загрузкой файла
       
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -99,6 +76,6 @@ jobs:
           SOURCE: "artifacts"
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: ${{ env.DIR }}
+          TARGET: "$HOME"
     
         
