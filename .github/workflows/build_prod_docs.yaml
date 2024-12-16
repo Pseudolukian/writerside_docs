@@ -135,8 +135,8 @@ jobs:
         
         - name: Upload Artifact with rsync
           env:
-            SERVER_USER: ${{ secrets.SERVER_USER }}
-            SERVER_HOST: ${{ secrets.SERVER_HOST }}
+            SERVER_USER: ${{ secrets.REMOTE_USER }}
+            SERVER_HOST: ${{ secrets.REMOTE_HOST }}
             SERVER_PATH: $HOME/
           run: |
             rsync --archive --compress --progress artifacts/docs ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}
