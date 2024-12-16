@@ -54,6 +54,15 @@ jobs:
           echo "TAG=${{ steps.get_tag.outputs.tag }}" >> $GITHUB_ENV
           echo "DIR=/var/www/writerside_doc/versions/${{ steps.get_tag.outputs.tag }}" >> $GITHUB_ENV
 
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "~/.ssh/known_hosts"
+
+      - name: Generate auth hosts
+        run: ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
+
       - name: Check structure on server
         id: prepare_server
         uses: garygrossgarten/github-action-ssh@release
