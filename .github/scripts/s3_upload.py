@@ -10,6 +10,8 @@ yandex_s3_endpoint = "https://storage.yandexcloud.net"
 
 
 def get_s3_session(access_key_id, secret_access_key):
+    """Create S3 session and return session obj
+    """
 
     session = boto3.session.Session()
     session = boto3.Session(
@@ -21,8 +23,11 @@ def get_s3_session(access_key_id, secret_access_key):
     s3 = session.client("s3", endpoint_url=yandex_s3_endpoint)
     return s3
 
+def create_s3_version_folder(s3_session, tag):
+    session = s3_session
 
-def clean_s3_bucket(s3_session):
+
+def clean_s3_bucket(s3_session, tag):
     
     # Получаем список всех объектов в бакете
     objects = s3_session.list_objects_v2(Bucket=bucket_name)
@@ -54,15 +59,17 @@ def upload_doc_s3(s3_session, bucket_name, folder_path):
             print(f"Загружен {local_path} в s3://{bucket_name}/{s3_key}")
     print("Все файлы успешно загружены.")
 
-def run(documentation_folder, access_key_id, secret_access_key):
+def run(documentation_folder, access_key_id, secret_access_key, current_tag):
     s3_connect = get_s3_session(access_key_id=access_key_id, secret_access_key = secret_access_key)
-    clean_s3_bucket(s3_session=s3_connect)
+    create_s3_version_folder(s3_session=s3_connect, tag=current_tag)
+    clean_s3_bucket(s3_session=s3_connect, tag=current_tag)
     upload_doc_s3(s3_session=s3_connect, bucket_name=bucket_name, folder_path=documentation_folder)
 
 if __name__ == "__main__":
     run(documentation_folder=sys.argv[1], 
         access_key_id = sys.argv[2], 
-        secret_access_key = sys.argv[3])
+        secret_access_key = sys.argv[3],
+        current_tag = sys.argv[4])
 
     
 

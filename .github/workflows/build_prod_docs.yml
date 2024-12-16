@@ -18,6 +18,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Extract current tag
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+            echo "Текущий тег: $TAG_NAME"
+            echo "CURRENT_TAG=$TAG_NAME" >> $GITHUB_ENV
+          else
+            echo "Не был пуш тега."
+          fi
+      
+
       - name: Define instance id and artifacts
         id: define-ids
         run: |
@@ -58,4 +70,4 @@ jobs:
         run: pip install -r './.github/scripts/requirements.txt'
 
       - name: Run Python script to upload documentation on S3
-        run: python ./.github/scripts/s3_upload.py "dir/" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}"
+        run: python ./.github/scripts/s3_upload_v2.py "dir/" "${{ secrets.S3_ACCESS_KEY_ID }}" "${{ secrets.S3_SECRET_ACCESS_KEY }}" "${{ env.CURRENT_TAG }}"
