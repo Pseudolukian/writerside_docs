@@ -2,11 +2,32 @@ name: Deploy documentation on server
 
 on:
   workflow_call:
+    inputs:
+      S3_ENDPOINT:
+        required: true
+        type: string
+      S3_REGION_NAME:
+        required: true
+        type: string
+      S3_BUCKET_NAME:
+        required: true
+        type: string
+      S3_ACCESS_KEY_ID:
+        required: true
+        type: string
+      S3_SECRET_ACCESS_KEY:
+        required: true
+        type: string
+    secrets:
+      S3_ACCESS_KEY_ID:
+        required: true
+      S3_SECRET_ACCESS_KEY:
+        required: true
+
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: deploy_to_s3
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,9 +74,9 @@ jobs:
       - name: Run upload script
         run: | 
           python ./.github/scripts/upload_doc_to_s3.py 
-          "${{ env.S3_ENDPOINT }}"
-          "${{ env.S3_REGION_NAME }}"
-          "${{ env.S3_BUCKET_NAME }}"
+          "${{ inputs.S3_ENDPOINT }}"
+          "${{ inputs.S3_REGION_NAME }}"
+          "${{ inputs.S3_BUCKET_NAME }}"
           "${{ secrets.S3_ACCESS_KEY_ID }}"
           "${{ secrets.S3_SECRET_ACCESS_KEY }}"
           "artifacts/docs/"
