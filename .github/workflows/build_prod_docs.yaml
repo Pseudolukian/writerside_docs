@@ -1,8 +1,8 @@
 name: Build production documentation
 
 on:
-  workflow_dispatch:
-    
+  workflow_call:
+
 env:
   INSTANCE: 'Writerside/writerside'
   DOCKER_VERSION: '243.21565'
