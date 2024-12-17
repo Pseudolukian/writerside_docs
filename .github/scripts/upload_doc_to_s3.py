@@ -2,10 +2,13 @@ import boto3
 import sys
 import os
 import zipfile
+from botocore.exceptions import BotoCoreError, NoCredentialsError, ClientError
+
 
 class S3_doc_upload:
 
-    def __init__(self, endpoint_url: str, 
+    def __init__(self, 
+                 endpoint_url: str, 
                  access_key_id:str, 
                  access_key:str, 
                  region_name:str, 
@@ -26,13 +29,22 @@ class S3_doc_upload:
         self.S3_exclude_folders = S3_exclude_folders
 
     def get_s3_session(self):
-        session = boto3.Session(
-            aws_access_key_id= self.access_key_id,
-            aws_secret_access_key=self.access_key,
-            region_name=self.region_name,
-        )
-        s3 = session.client("s3", endpoint_url=self.endpoint_url)
-        return s3
+        try:
+            session = boto3.Session(
+                aws_access_key_id=self.access_key_id,
+                aws_secret_access_key=self.access_key,
+                region_name=self.region_name,
+            )
+            s3 = session.client("s3", endpoint_url=self.endpoint_url)
+            
+            # Попытка вызова метода клиента, чтобы убедиться, что сессия работает
+            s3.list_buckets()
+            
+            print("S3 session obtained successfully")
+            return s3
+
+        except (BotoCoreError, NoCredentialsError, ClientError) as e:
+            raise RuntimeError("Cannot connect to S3: {}".format(e))
 
     def S3_dir_worker(self, s3_session: get_s3_session) -> str:
         prefix = f"{self.S3_upload_dir}/{self.current_tag}/"
