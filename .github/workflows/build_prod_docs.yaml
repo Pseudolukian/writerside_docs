@@ -1,7 +1,7 @@
 name: Build production documentation
 
 on:
-  workflow_call:
+  workflow_dispatch:
 
 env:
   INSTANCE: 'Writerside/writerside'
@@ -65,3 +65,61 @@ jobs:
             artifacts/report.json
             artifacts/${{ env.ALGOLIA_ARTIFACT }}
           retention-days: 7
+  
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+  
+      - name: Get Latest Tag
+        id: get_tag
+        run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
+      
+      - name: Check and Print Tag
+        run: |
+          if [ -z "${{ steps.get_tag.outputs.tag }}" ]; then
+            echo "Tag is empty. Exiting."
+            exit 1
+          else
+            echo "Latest Tag: ${{ steps.get_tag.outputs.tag }}"
+          fi        
+      
+      - name: Set environment variables
+        run: |
+          echo "TAG=${{ steps.get_tag.outputs.tag }}" >> $GITHUB_ENV
+      
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: docs
+          path: artifacts
+      
+      - name: Setup Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+  
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ./.github/scripts/requirements.txt
+      
+      - name: Unzip documentation artifact
+        run: |
+          python ./.github/scripts/doc_artifact_unzip.py
+  
+      - name: Run upload script
+        run: | 
+          python ./.github/scripts/upload_doc_to_s3.py 
+          "${{ env.S3_ENDPOINT }}"
+          "${{ env.S3_REGION_NAME }}"
+          "${{ env.S3_BUCKET_NAME }}"
+          "${{ secrets.S3_ACCESS_KEY_ID }}"
+          "${{ secrets.S3_SECRET_ACCESS_KEY }}"
+          "artifacts/docs/"
+          "versions"
+          "${{ env.TAG }}"
+          "['versions']"        
