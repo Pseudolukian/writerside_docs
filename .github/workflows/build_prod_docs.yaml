@@ -1,13 +1,8 @@
 name: Build production documentation
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '.github/**'
-      - 'help-versions.json'
-
+  workflow_dispatch:
+    
 env:
   INSTANCE: 'Writerside/writerside'
   DOCKER_VERSION: '243.21565'
