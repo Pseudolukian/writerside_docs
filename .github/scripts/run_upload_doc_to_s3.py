@@ -6,7 +6,7 @@ if __name__ == "__main__":
                           bucket_name = sys.argv[3],
                           access_key_id = sys.argv[4],
                           access_key = sys.argv[5],
-                          path_to_doc = sys.argv[6],
+                          path_to_doc_folder = sys.argv[6],
                           S3_upload_dir =sys.argv[7],
                           current_tag = sys.argv[8],
                           S3_exclude_folders = sys.argv[9]
