@@ -115,9 +115,9 @@ jobs:
       - name: Run upload script
         run: | 
           python ./.github/scripts/upload_doc_to_s3.py 
-          "${{ env.S3_ENDPOINT }}"
-          "${{ env.S3_REGION_NAME }}"
-          "${{ env.S3_BUCKET_NAME }}"
+          "${{ vars.S3_ENDPOINT }}"
+          "${{ vars.S3_REGION_NAME }}"
+          "${{ vars.S3_BUCKET_NAME }}"
           "${{ secrets.S3_ACCESS_KEY_ID }}"
           "${{ secrets.S3_SECRET_ACCESS_KEY }}"
           "artifacts/docs/"
