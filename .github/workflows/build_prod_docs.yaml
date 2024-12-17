@@ -98,9 +98,15 @@ jobs:
         with:
           name: docs
           path: artifacts
+      
+      - name: Show artifact
+        run: ls -l artifacts/docs 
 
       - name: Unzip artifact
         run: find /home/runner/work/writerside_docs/writerside_docs/artifacts -name '*.zip' -exec unzip -O UTF-8 -qq {} -d dir \;
+      
+      - name: List of files
+        run: ls -l /home/runner/work/writerside_docs/writerside_docs/artifacts    
       
       - name: Setup Python environment
         uses: actions/setup-python@v4
