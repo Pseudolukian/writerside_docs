@@ -110,7 +110,7 @@ jobs:
       
       - name: Unzip documentation artifact
         run: |
-          python ./.github/scripts/doc_artifact_unzip.py
+          python ./.github/scripts/doc_artifact_unzip.py "artifacts/docs/"
   
       - name: Run upload script
         run: | 

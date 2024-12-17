@@ -1,5 +1,6 @@
 import os
 import zipfile
+import sys
 
 def unpack_doc_artifact(path_to_doc:str) -> str:
         for filename in os.listdir(path_to_doc):
@@ -13,3 +14,6 @@ def unpack_doc_artifact(path_to_doc:str) -> str:
             else:
                 print(f"{filename} is not a ZIP file. Skipping...")
         return "Documentation has unpacked"
+
+if __name__ == "__main__":
+     unpack_doc_artifact(path_to_doc=sys.argv[1])
