@@ -6,36 +6,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: deploy_to_s3
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Check Secrets Access
-        run: |
-          if [ -z "${{ secrets.REMOTE_HOST }}" ]; then
-            echo "REMOTE_HOST is not accessible."
-            exit 1
-          else
-            echo "REMOTE_HOST is accessible."
-          fi
-          
-          if [ -z "${{ secrets.REMOTE_USER }}" ]; then
-            echo "REMOTE_USER is not accessible."
-            exit 1
-          else
-            echo "REMOTE_USER is accessible."
-          fi
-          
-          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
-            echo "SSH_PRIVATE_KEY is not accessible."
-            exit 1
-          else
-            echo "SSH_PRIVATE_KEY is accessible."
-          fi
   
-   
       - name: Get Latest Tag
         id: get_tag
         run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
@@ -52,16 +29,6 @@ jobs:
       - name: Set environment variables
         run: |
           echo "TAG=${{ steps.get_tag.outputs.tag }}" >> $GITHUB_ENV
-          echo "DIR=/var/www/writerside_doc/versions/${{ steps.get_tag.outputs.tag }}" >> $GITHUB_ENV
-
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: "~/.ssh/known_hosts"
-
-      - name: Generate auth hosts
-        run: ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
       
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -69,13 +36,29 @@ jobs:
           name: docs
           path: artifacts
       
-      - name: Upload Artifact
-        uses: easingthemes/ssh-deploy@main
+      - name: Setup Python environment
+        uses: actions/setup-python@v4
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SOURCE: "artifacts"
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: "$HOME"
-    
-        
+          python-version: '3.x'
+  
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ./.github/scripts/requirements.txt
+      
+      - name: Unzip documentation artifact
+        run: |
+          python ./.github/scripts/doc_artifact_unzip.py
+  
+      - name: Run upload script
+        run: | 
+          python ./.github/scripts/upload_doc_to_s3.py 
+          "${{ env.S3_ENDPOINT }}"
+          "${{ env.S3_REGION_NAME }}"
+          "${{ env.S3_BUCKET_NAME }}"
+          "${{ secrets.S3_ACCESS_KEY_ID }}"
+          "${{ secrets.S3_SECRET_ACCESS_KEY }}"
+          "artifacts/docs/"
+          "versions"
+          "${{ env.TAG }}"
+          "['versions']"
