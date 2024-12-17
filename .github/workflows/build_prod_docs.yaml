@@ -100,7 +100,7 @@ jobs:
           path: artifacts
 
       - name: Unzip artifact
-        run: find artifacts/docs -name '*.zip' -exec unzip -O UTF-8 -qq {} -d dir \;
+        run: find /home/runner/work/writerside_docs/writerside_docs/artifacts/docs -name '*.zip' -exec unzip -O UTF-8 -qq {} -d dir \;
       
       - name: Setup Python environment
         uses: actions/setup-python@v4
