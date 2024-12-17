@@ -13,8 +13,8 @@ if __name__ == "__main__":
                           )
     
     s3_session = s3_upload.get_s3_session()
-    s3_actual_version_dir = s3_upload(s3_session = s3_session)
-    upload_doc_to_s3_version_folder = s3_upload.upload_doc_s3(s3_session=s3_session, s3_actual_version_dir = s3_actual_version_dir)
-    upload_doc_to_s3_root = s3_upload.upload_doc_to_s3_root(s3_session=s3_session)
+    s3_actual_version_dir = s3_upload.S3_dir_worker(s3_session = s3_session)
+    upload_doc_to_s3_version_folder = s3_upload.upload_doc_s3(s3_session = s3_session, s3_actual_version_dir = s3_actual_version_dir)
+    upload_doc_to_s3_root = s3_upload.upload_doc_to_s3_root(s3_session = s3_session)
 
 
