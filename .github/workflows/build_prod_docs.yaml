@@ -104,8 +104,24 @@ jobs:
       - name: Show artifact
         run: ls -l /home/runner/work/writerside_docs/writerside_docs/artifacts
 
-      - name: Unzip artifact
-        run: find /home/runner/work/writerside_docs/writerside_docs/artifacts -name '*.zip' -exec sh -c 'unzip -O UTF-8 -qq -o "$0" -d "$(dirname "$0")"' {} \;
+      - name: Unzip artifacts
+        run: |
+          find /home/runner/work/writerside_docs/writerside_docs/artifacts -name '*.zip' -exec sh -c '
+            for zipfile do
+              dir="$(dirname "$zipfile")"
+              filename="$(basename "$zipfile")"
+              if echo "$filename" | grep -qi "algolia"; then
+                echo "Распаковываем $filename в $dir/algolia"
+                mkdir -p "$dir/algolia"
+                unzip -O UTF-8 -qq -o "$zipfile" -d "$dir/algolia"
+              else
+                echo "Распаковываем $filename в $dir"
+                unzip -O UTF-8 -qq -o "$zipfile" -d "$dir"
+              fi
+              echo "Удаляем $filename"
+              rm "$zipfile"
+            done
+          ' sh {} +
       
       - name: List of files
         run: ls -l /home/runner/work/writerside_docs/writerside_docs/artifacts    
