@@ -1,7 +1,9 @@
 name: Build production documentation
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 env:
   INSTANCE: 'Writerside/writerside'
