@@ -1,5 +1,5 @@
 [
     {"version":"0.1","url":"/versions/0.1/getting-started.html","isCurrent":false},
     {"version":"0.2","url":"/versions/0.2/getting-started.html","isCurrent":false},
-    {"version":"0.3","url":"/getting-started.html","isCurrent":true}
+    {"version":"0.3","url":"/","isCurrent":true}
 ]
