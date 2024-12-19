@@ -1,3 +1,3 @@
 # Test tags works
 
-This text is written in tag 0.3. This text must appear only in tag 0.3.
+This is text for test my system of sync tags in gitHUB. Actual tag is 0.4

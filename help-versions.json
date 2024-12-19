@@ -1,5 +1,22 @@
 [
-    {"version":"0.1","url":"/versions/0.1/","isCurrent":false},
-    {"version":"0.2","url":"/versions/0.2/","isCurrent":false},
-    {"version":"0.3","url":"/","isCurrent":true}
+  {
+    "version": "0.1",
+    "url": "/versions/0.1/",
+    "isCurrent": false
+  },
+  {
+    "version": "0.2",
+    "url": "/versions/0.2/",
+    "isCurrent": false
+  },
+  {
+    "version": "0.3",
+    "url": "/versions/0.3/",
+    "isCurrent": false
+  },
+  {
+    "version": "0.4",
+    "url": "/",
+    "isCurrent": true
+  }
 ]
